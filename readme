@@ -1,0 +1,7 @@
+install the library:
+	make
+	make install
+
+Compile:
+	add -lflint -lgmp -lmpfr -lpthread -lm -lswhe
+
