@@ -9,7 +9,9 @@
 #include "flint/fmpz_mat.h"
 #include <libswhe.h>
 
-int main(int argc, char *args[])  /* n, t,q,d,sk*/
+char str[100000];
+
+int main(int argc, char *args[])  /* n, t,q,d,sk.txt*/
 {
         bv_swhe_context_t *params;
         params = bv_swhe_init(params, args[1], args[2], args[3], args[4], 10);
@@ -25,7 +27,15 @@ int main(int argc, char *args[])  /* n, t,q,d,sk*/
         fmpz_poly_init(fx);
         fmpz_poly_set_coeff_ui(fx, 0, 1);
         fmpz_poly_set_coeff_ui(fx, n, 1);
-        fmpz_poly_set_str(sk, args[5]);
+        FILE *fp;
+        if((fp = fopen(args[5], "r")) == NULL) {
+                printf("file open error\n");
+                exit(0);
+        }
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(sk, str);
+        fclose(fp);
+        
         fmpz_poly_mul(sk2, sk, sk);
         fmpz_poly_rem_basecase(sk2, sk2, fx);
         fmpz_poly_scalar_smod_fmpz(sk2, sk2, params->q);
@@ -34,12 +44,13 @@ int main(int argc, char *args[])  /* n, t,q,d,sk*/
 	fmpz_t ti;
 	fmpz_init(ti);
 	fmpz_set_ui(ti, 1);
-	long len = fmpz_clog(params->q, params->t) - 1, i;
+	long len = fmpz_clog(params->q, params->t), i;
 	head = (hk_node_t *)malloc(sizeof(hk_node_t));
 	head->next = NULL;
 	r = head;
         char *hk1, *hk2;
-	for( i = 0 ; i <= len ; i++ ) {
+        printf("%ld\n", len);
+	for( i = 0 ; i < len ; i++ ) {
 		s = (hk_node_t *)malloc(sizeof(hk_node_t));
 		fmpz_poly_init(s->a);
 		bv_swhe_unif_poly(s->a, n, params->q);
@@ -55,12 +66,11 @@ int main(int argc, char *args[])  /* n, t,q,d,sk*/
                 hk1 = fmpz_poly_get_str(s->a);
                 hk2 = fmpz_poly_get_str(s->b);
                 
-                printf("\"%s\" \"%s\" ", hk1, hk2);
+                printf("%s\n%s\n", hk1, hk2);
 		fmpz_mul(ti, ti, params->t);
 		r->next = s;
 		r = s;
 	}
-        printf("\n");
 	r->next = NULL;
 
 	fmpz_poly_clear(sk2);

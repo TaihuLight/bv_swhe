@@ -21,7 +21,7 @@ int main(int argc, char *args[])/*n t q d*/
         ctr = _fmpz_vec_init(n);
         bv_swhe_guassian_poly(ctr, sk, n);
         char *s = fmpz_poly_get_str(sk);
-        printf("\"%s\"\n",s);
+        printf("%s\n",s);
         fmpz_poly_clear(sk);
         _fmpz_vec_clear(ctr, n);
         return 0;

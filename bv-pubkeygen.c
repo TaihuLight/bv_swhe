@@ -9,7 +9,9 @@
 #include "flint/fmpz_mat.h"
 #include <libswhe.h>
 
-int main(int argc, char *args[]) /* n t q d sk*/
+char str[100000];
+
+int main(int argc, char *args[]) /* n t q d sk.txt*/
 {
         bv_swhe_context_t *params;
         params = bv_swhe_init(params, args[1], args[2], args[3], args[4], 10);
@@ -20,7 +22,16 @@ int main(int argc, char *args[]) /* n t q d sk*/
         fmpz_poly_init(fx);
         fmpz_poly_set_coeff_ui(fx, 0, 1);
         fmpz_poly_set_coeff_ui(fx, n, 1);
-        fmpz_poly_set_str(sk, args[5]);
+        FILE *fp;
+        
+        if((fp = fopen(args[5], "r")) == NULL)
+        {
+                printf("file read error\n");
+                exit(0);
+        }
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(sk, str);
+        fclose(fp);
 	fmpz *ctr;
         ctr = _fmpz_vec_init(n);
         
@@ -47,7 +58,7 @@ int main(int argc, char *args[]) /* n t q d sk*/
         
         char *pk1 = fmpz_poly_get_str(a1);
         char *pk0 = fmpz_poly_get_str(a0);
-        printf("\"%s\" \"%s\"\n",pk0, pk1);
+        printf("%s\n%s\n",pk0, pk1);
 
         fmpz_poly_clear(e);
 	fmpz_poly_clear(tmp);

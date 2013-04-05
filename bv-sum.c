@@ -9,7 +9,9 @@
 #include "flint/fmpz_mat.h"
 #include <libswhe.h>
 
-int main(int argc, char *args[])/* n,t,q,d,c10,c11,c20,c21*/
+char str[100000];
+
+int main(int argc, char *args[])/* n,t,q,d,ct1.txt,ct2.txt*/
 {
         bv_swhe_context_t *params;
         params = bv_swhe_init(params, args[1], args[2], args[3], args[4], 10);
@@ -26,10 +28,30 @@ int main(int argc, char *args[])/* n,t,q,d,c10,c11,c20,c21*/
 
         fmpz_poly_set_coeff_ui(fx, 0, 1);
         fmpz_poly_set_coeff_ui(fx, n, 1);
-        fmpz_poly_set_str(c10, args[5]);
-        fmpz_poly_set_str(c11, args[6]);
-        fmpz_poly_set_str(c20, args[7]);
-        fmpz_poly_set_str(c21, args[8]);
+        
+        FILE *fp;
+        
+        if((fp = fopen(args[5], "r")) == NULL)
+        {
+                printf("file read error\n");
+                exit(0);
+        }
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(c10, str);
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(c11, str);
+        fclose(fp);
+        
+        if((fp = fopen(args[6], "r")) == NULL)
+        {
+                printf("file read error\n");
+                exit(0);
+        }
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(c20, str);
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(c21, str);
+        fclose(fp);
 
         
 	fmpz_poly_add(nc0, c10, c20);
@@ -41,7 +63,7 @@ int main(int argc, char *args[])/* n,t,q,d,c10,c11,c20,c21*/
         
         char *ct1 = fmpz_poly_get_str(nc1);
         char *ct0 = fmpz_poly_get_str(nc0);
-        printf("\"%s\" \"%s\"\n",ct0, ct1);
+        printf("%s\n%s\n",ct0, ct1);
 
         
         fmpz_poly_clear(c10);

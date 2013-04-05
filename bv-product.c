@@ -9,7 +9,9 @@
 #include "flint/fmpz_mat.h"
 #include <libswhe.h>
 
-int main(int argc, char *args[])/*n t q d c10 c11 c20 c21 hk*/
+char str[100000];
+
+int main(int argc, char *args[])/*n t q d ct1.txt ct2.txt hk.txt*/
 {
         bv_swhe_context_t *params;
         params = bv_swhe_init(params, args[1], args[2], args[3], args[4], 10);
@@ -26,27 +28,58 @@ int main(int argc, char *args[])/*n t q d c10 c11 c20 c21 hk*/
         
         fmpz_poly_set_coeff_ui(fx, 0, 1);
         fmpz_poly_set_coeff_ui(fx, n, 1);
-        fmpz_poly_set_str(c10, args[5]);
-        fmpz_poly_set_str(c11, args[6]);
-        fmpz_poly_set_str(c20, args[7]);
-        fmpz_poly_set_str(c21, args[8]);
+        FILE *fp;
+        
+        if((fp = fopen(args[5], "r")) == NULL)
+        {
+                printf("file read error\n");
+                exit(0);
+        }
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(c10, str);
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(c11, str);
+        fclose(fp);
+        
+        if((fp = fopen(args[6], "r")) == NULL)
+        {
+                printf("file read error\n");
+                exit(0);
+        }
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(c20, str);
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(c21, str);
+        fclose(fp);
         
         hk_node_t *head, *s, *r;
         head = (hk_node_t *)malloc(sizeof(hk_node_t));
 	head->next = NULL;
 	r = head;
-        long i = 9;
-        while(i < argc) {
+        long i;
+        fmpz_t hklen;
+        fmpz_init(hklen);
+        if((fp = fopen(args[7], "r")) == NULL)
+        {
+                printf("file read error\n");
+                exit(0);
+        }
+        fgets(str, 10, fp);
+        fmpz_set_str(hklen, str, 10);
+        long len = fmpz_get_ui(hklen);
+        for(i = 0 ; i < len ; i++) {
                 s = (hk_node_t *)malloc(sizeof(hk_node_t));
 		fmpz_poly_init(s->a);
-                fmpz_poly_set_str(s->a, args[i++]);
+                fgets(str, 100000, fp);
+                fmpz_poly_set_str(s->a, str);
                 fmpz_poly_init(s->b);
-                fmpz_poly_set_str(s->a, args[i++]);
+                fgets(str, 100000, fp);
+                fmpz_poly_set_str(s->b, str);
                 r->next = s;
 		r = s;
         }
         r->next = NULL;
-        
+        fclose(fp);
 	fmpz_poly_t tmp0, tmp1, tmp2, tmp;
 	fmpz_poly_init(tmp0);
 	fmpz_poly_mul(tmp0, c10, c20);
@@ -66,7 +99,7 @@ int main(int argc, char *args[])/*n t q d c10 c11 c20 c21 hk*/
 	fmpz_poly_rem_basecase(tmp2, tmp2, fx);
 	fmpz_poly_scalar_smod_fmpz(tmp2, tmp2, params->q);
         
-	long len = fmpz_clog(params->q, params->t);
+	len = fmpz_clog(params->q, params->t);
         long ll = fmpz_poly_length(tmp2);
 	long j;
 	fmpz_t hold;
@@ -126,7 +159,7 @@ int main(int argc, char *args[])/*n t q d c10 c11 c20 c21 hk*/
 	fmpz_poly_scalar_smod_fmpz(nc1, nc1, params->q);
         char *ct1 = fmpz_poly_get_str(nc1);
         char *ct0 = fmpz_poly_get_str(nc0);
-        printf("\"%s\" \"%s\"\n",ct0, ct1);
+        printf("%s\n%s\n",ct0, ct1);
         
         fmpz_poly_clear(c10);
         fmpz_poly_clear(c11);
@@ -140,7 +173,7 @@ int main(int argc, char *args[])/*n t q d c10 c11 c20 c21 hk*/
 	fmpz_poly_clear(tmp0);
 	fmpz_poly_clear(tmp2);
         fmpz_poly_clear(xtmp);
-        
+        fmpz_clear(hklen);
 	fmpz_poly_clear(multmp);
 	fmpz_clear(hold);
 	fmpz_mat_clear(bits);
