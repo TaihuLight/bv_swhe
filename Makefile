@@ -1,14 +1,18 @@
-prv:
-	gcc -o prv bv_swhe.c bv-prvkeygen.c -lflint -lgmp -lmpfr -lpthread -lm
-pub:
-	gcc -o pub bv_swhe.c bv-pubkeygen.c -lflint -lgmp -lmpfr -lpthread -lm
+sk:
+	gcc -o sk local.c bv-skeygen.c -lflint -lgmp -lmpfr -lpthread -lm
+pk:
+	gcc -o pk local.c bv-pkeygen.c -lflint -lgmp -lmpfr -lpthread -lm
 hk:
-	gcc -o hk bv_swhe.c bv-hkeygen.c -lflint -lgmp -lmpfr -lpthread -lm
+	gcc -o hk local.c bv-hkeygen.c -lflint -lgmp -lmpfr -lpthread -lm
 enc:
-	gcc -o enc bv_swhe.c bv-enc.c -lflint -lgmp -lmpfr -lpthread -lm
+	gcc -o enc local.c bv-enc.c -lflint -lgmp -lmpfr -lpthread -lm
 dec:
-	gcc -o dec bv_swhe.c bv-dec.c -lflint -lgmp -lmpfr -lpthread -lm
-pro:
-	gcc -o pro bv_swhe.c bv-product.c -lflint -lgmp -lmpfr -lpthread -lm
-sum:
-	gcc -o sum bv_swhe.c bv-sum.c -lflint -lgmp -lmpfr -lpthread -lm
+	gcc -o dec local.c bv-dec.c -lflint -lgmp -lmpfr -lpthread -lm
+mul:
+	gcc -o mul local.c bv-mul.c -lflint -lgmp -lmpfr -lpthread -lm
+add:
+	gcc -o add local.c bv-add.c -lflint -lgmp -lmpfr -lpthread -lm
+clear:
+	rm sk && rm pk && rm hk && rm enc && rm dec && rm mul && rm add
+all:
+	make sk && make pk && make hk && make enc && make dec && make mul && make add

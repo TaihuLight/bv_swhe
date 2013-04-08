@@ -32,7 +32,7 @@ static long chrnd = 0;
 
 bv_swhe_context_t *bv_swhe_init(bv_swhe_context_t *ctx, char *nn, char *tt, char *qq, char *dd, int b);
 double bv_swhe_get_dvn();
-void hcrypt_random(fmpz_t r);
+void hcrypt_random(mpz_t r);
 fmpz *bv_swhe_samplez(fmpz *vec, long n);
 void bv_swhe_guassian_poly(fmpz *c, fmpz_poly_t poly, long n);
 void bv_swhe_unif_poly(fmpz_poly_t poly, long n, fmpz_t q);
